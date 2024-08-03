@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { CreateComponent } from "./CreateComponent";
+import CreateComponent from "./CreateComponent";
 
 export const CreateDesign = () => {
   const ref = useRef();
