@@ -1,4 +1,5 @@
 import { BsTrash } from "react-icons/bs";
+import Element from "./Element";
 const CreateComponent = ({ info, current_component, removeComponent }) => {
   const randValue = Math.floor(Math.random() * 100);
   let html = "";
@@ -39,6 +40,7 @@ const CreateComponent = ({ info, current_component, removeComponent }) => {
         }}
         className="absolute group hover:border-[2px] hover:border-indigo-500"
       >
+        <Element id={randValue} info={info} exId="" />
         {current_component.id === info.id && (
           <div
             onClick={() => removeComponent(info.id)}

@@ -12,11 +12,13 @@ import { Image } from "../components/main/Image";
 import CreateComponent from "../components/CreateComponent";
 
 export const Main = () => {
+  const [state, setState] = useState("");
   const [current_component, setCurrentComponent] = useState("");
   const [color, setColor] = useState("");
   const [image, setImage] = useState("");
   const [rotate, setRotate] = useState(0);
-  const [state, setState] = useState("");
+  const [left, setLeft] = useState("");
+  const [top, setTop] = useState("");
   const [show, setShow] = useState({
     status: true,
     name: "",
@@ -30,8 +32,32 @@ export const Main = () => {
     });
   };
 
-  const moveElement = () => {
-    console.log("move");
+  const moveElement = (id, currentInfo) => {
+    setCurrentComponent(currentInfo);
+
+    let isMoving = true;
+    const currentDiv = document.getElementById(id);
+
+    const mouseMove = ({ movementX, movementY }) => {
+      const getStyle = window.getComputedStyle(currentDiv);
+      const left = parseInt(getStyle.left);
+      const top = parseInt(getStyle.top);
+      if (isMoving) {
+        currentDiv.style.left = `${left + movementX}px`;
+        currentDiv.style.top = `${top + movementY}px`;
+      }
+    };
+
+    const mouseUp = (e) => {
+      isMoving = false;
+      window.removeEventListener("mousemove", mouseMove);
+      window.removeEventListener("mouseup", mouseUp);
+      setLeft(parseInt(currentDiv.style.left));
+      setTop(parseInt(currentDiv.style.top));
+    };
+
+    window.addEventListener("mousemove", mouseMove);
+    window.addEventListener("mouseup", mouseUp);
   };
 
   const resizeElement = () => {
@@ -96,15 +122,19 @@ export const Main = () => {
     if (current_component) {
       const index = components.findIndex((c) => c.id === current_component.id);
       const temp = components.filter((c) => c.id !== current_component.id);
+
       if (current_component.name === "main_frame" && image) {
-        console.log(image);
         components[index].image = image || current_component.image;
       }
       components[index].color = color || current_component.color;
+      if (current_component.name !== "main_frame") {
+        components[index].left = left || current_component.left;
+        components[index].top = top || current_component.top;
+      }
 
       setComponents([...temp, components[index]]);
     }
-  }, [color, image]);
+  }, [color, image, left, top]);
 
   return (
     <div className="min-w-screen h-screen bg-black">
