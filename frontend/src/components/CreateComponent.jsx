@@ -4,7 +4,6 @@ const CreateComponent = ({ info, current_component, removeComponent }) => {
   const randValue = Math.floor(Math.random() * 100);
   let html = "";
 
-  console.log(`info name ${info.name} info type ${info.type}`);
   if (info.name === "main_frame") {
     html = (
       <div

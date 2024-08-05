@@ -21,6 +21,7 @@ export const Main = () => {
   const [top, setTop] = useState("");
   const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
+
   const [show, setShow] = useState({
     status: true,
     name: "",
@@ -91,7 +92,44 @@ export const Main = () => {
     window.addEventListener("mouseup", mouseUp);
   };
 
-  const rotateElement = (id, currentInfo) => {};
+  const rotateElement = (id, currentInfo) => {
+    setCurrentComponent("");
+    setCurrentComponent(currentInfo);
+
+    const target = document.getElementById(id);
+
+    const mouseMove = ({ movementX, movementY }) => {
+      const getStyle = window.getComputedStyle(target);
+      const trans = getStyle.transform;
+      const values = trans.split("(")[1].split(")")[0].split(",");
+      const angle = Math.round(
+        Math.atan2(values[1], values[0]) * (180 / Math.PI)
+      );
+      let deg = angle < 0 ? angle + 360 : angle;
+
+      if (movementX) {
+        deg = deg + movementX;
+      }
+      target.style.transform = `rotate(${deg}deg)`;
+    };
+
+    const mouseUp = (e) => {
+      window.removeEventListener("mousemove", mouseMove);
+      window.removeEventListener("mouseup", mouseUp);
+
+      const getStyle = window.getComputedStyle(target);
+      const trans = getStyle.transform;
+      const values = trans.split("(")[1].split(")")[0].split(",");
+      const angle = Math.round(
+        Math.atan2(values[1], values[0]) * (180 / Math.PI)
+      );
+      let deg = angle < 0 ? angle + 360 : angle;
+      setRotate(deg);
+    };
+
+    window.addEventListener("mousemove", mouseMove);
+    window.addEventListener("mouseup", mouseUp);
+  };
 
   const remove_background = () => {
     const com = components.find((c) => c.id === current_component.id);
@@ -147,18 +185,23 @@ export const Main = () => {
     if (current_component) {
       const index = components.findIndex((c) => c.id === current_component.id);
       const temp = components.filter((c) => c.id !== current_component.id);
+
       if (current_component.name !== "text") {
         components[index].width = width || current_component.width;
         components[index].height = height || current_component.height;
+        components[index].rotate = rotate || current_component.rotate;
       }
 
       if (current_component.name === "main_frame" && image) {
         components[index].image = image || current_component.image;
       }
+
       components[index].color = color || current_component.color;
+
       if (current_component.name !== "main_frame") {
         components[index].left = left || current_component.left;
         components[index].top = top || current_component.top;
+        components[index].rotate = rotate || current_component.rotate;
       }
 
       setComponents([...temp, components[index]]);
@@ -166,6 +209,7 @@ export const Main = () => {
       setHeight("");
       setTop("");
       setLeft("");
+      setRotate(0);
     }
   }, [color, image, left, top, width, height]);
 
